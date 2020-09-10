@@ -1,110 +1,114 @@
 import React from "react";
 import Logos from "./constant/logos";
 
+const initCanvas = (title, imagesUrl, callback) => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#121212";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // const margin = 30;
+  // let x = 0;
+  // let y = 10;
+  // const howManyPerLine = canvas.width / 10;
+  // const howManyLines = canvas.height / 10;
+
+  // console.log(
+  //   canvas.width,
+  //   canvas.height,
+  //   margin,
+  //   howManyPerLine,
+  //   howManyLines
+  // );
+
+  // ctx.fillStyle = "#3d3d3d";
+  // for (let j = 0; j < howManyLines; j++) {
+  //   for (let i = 0; i < howManyPerLine; i++) {
+  //     ctx.fillRect(x + margin, y, 2, 2);
+  //     x = x + margin;
+  //   }
+  //   y = y + margin;
+  //   x = 0;
+  // }
+
+  addTitle(title);
+  addImages(imagesUrl, callback);
+  generateImage(callback);
+};
+
+const generateImage = (callback) => {
+  console.log("generating image...");
+  const canvas = document.getElementById("canvas");
+  const imgData = canvas.toDataURL("image/png");
+  console.log(callback);
+  callback(imgData);
+  // setHref(imgData);
+};
+
+const addTitle = (title) => {
+  console.log("writing on canvas...");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.font = "30px Inter";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.fillText(title, canvas.width / 2, canvas.height / 2 + 50);
+};
+
+const addImages = (imagesUrl, callback) => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  const xCenter = canvas.width / 2;
+  const yCenter = canvas.height / 2;
+  const size = 80;
+  const plusSize = 20;
+  ctx.fillStyle = "rgba(255,255,255, .38)";
+
+  for (let i = 0; i < imagesUrl.length; i++) {
+    const img = new Image();
+    let x = xCenter - size / 2;
+    let y = yCenter - size / 2 - 50;
+    switch (imagesUrl.length) {
+      case 2:
+        if (i === 0) {
+          ctx.fillRect(xCenter, yCenter - 50 - plusSize / 2, 1, plusSize);
+          ctx.fillRect(xCenter - plusSize / 2, yCenter - 50, plusSize, 1);
+          x = x - size;
+        } else {
+          x = x + size;
+        }
+        break;
+      default:
+        break;
+    }
+    img.onload = function () {
+      ctx.drawImage(img, x, y, size, size);
+      console.log("drawing image...");
+      generateImage(callback);
+    };
+    img.src = imagesUrl[i];
+  }
+};
+
 function App() {
   const [title, setTitle] = React.useState("Your awesome article's title");
   const [href, setHref] = React.useState("");
-  const [loading, setLoading] = React.useState(true);
+  // const [loading, setLoading] = React.useState(true);
 
   const [imagesUrl, setImagesUrl] = React.useState([
     "/images/logos/javascript.svg",
   ]);
 
-  const generateImage = () => {
-    console.log("generating image...");
-    const canvas = document.getElementById("canvas");
-    const imgData = canvas.toDataURL("image/png");
-    setHref(imgData);
-  };
-
-  const initCanvas = () => {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#121212";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // const margin = 30;
-    // let x = 0;
-    // let y = 10;
-    // const howManyPerLine = canvas.width / 10;
-    // const howManyLines = canvas.height / 10;
-
-    // console.log(
-    //   canvas.width,
-    //   canvas.height,
-    //   margin,
-    //   howManyPerLine,
-    //   howManyLines
-    // );
-
-    // ctx.fillStyle = "#3d3d3d";
-    // for (let j = 0; j < howManyLines; j++) {
-    //   for (let i = 0; i < howManyPerLine; i++) {
-    //     ctx.fillRect(x + margin, y, 2, 2);
-    //     x = x + margin;
-    //   }
-    //   y = y + margin;
-    //   x = 0;
-    // }
-
-    addTitle();
-    addImages();
-    generateImage();
-  };
-
-  const addTitle = () => {
-    console.log("writing on canvas...");
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx.font = "30px Inter";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText(title, canvas.width / 2, canvas.height / 2 + 50);
-  };
-
-  const addImages = () => {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const xCenter = canvas.width / 2;
-    const yCenter = canvas.height / 2;
-    const size = 80;
-    const plusSize = 20;
-    ctx.fillStyle = "rgba(255,255,255, .38)";
-
-    for (let i = 0; i < imagesUrl.length; i++) {
-      const img = new Image();
-      let x = xCenter - size / 2;
-      let y = yCenter - size / 2 - 50;
-      switch (imagesUrl.length) {
-        case 2:
-          if (i === 0) {
-            ctx.fillRect(xCenter, yCenter - 50 - plusSize / 2, 1, plusSize);
-            ctx.fillRect(xCenter - plusSize / 2, yCenter - 50, plusSize, 1);
-            x = x - size;
-          } else {
-            x = x + size;
-          }
-          break;
-        default:
-          break;
-      }
-      img.onload = function () {
-        ctx.drawImage(img, x, y, size, size);
-        console.log("drawing image...");
-        generateImage();
-      };
-      img.src = imagesUrl[i];
-    }
-  };
-
   React.useEffect(() => {
-    initCanvas();
+    initCanvas(title, imagesUrl, function (data) {
+      setHref(data);
+    });
   }, [title, imagesUrl]);
 
-  React.useEffect(() => {
-    initCanvas();
-  }, []);
+  // React.useEffect(() => {
+  //   initCanvas();
+  // }, []);
 
   return (
     <div className="App">
@@ -208,7 +212,7 @@ function App() {
               </div>
             </div>
           </div>
-          {loading && <p>loading...</p>}
+          {/* {loading && <p>loading...</p>} */}
           <a
             download={title.replace(/[^a-z0-9]/gi, "_").toLowerCase() + ".png"}
             href={href}
